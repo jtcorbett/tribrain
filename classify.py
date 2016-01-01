@@ -37,10 +37,10 @@ def load_dataset(dataset, path, positive):
 
     return dataset
 
-def build_NN(pos_td_dir, neg_td_dir, target_error):
+def build_NN(pos_td_dir, neg_td_dir):
     # Hardcode NN features for now
     print "Creating Neural Net..."
-    net = buildNetwork(IN_FEATURES, 100, 1)
+    net = buildNetwork(IN_FEATURES, 500, 300, 100, 1)
     ds = SupervisedDataSet(IN_FEATURES, 1)
 
     print "Loading dataset..."
@@ -50,16 +50,7 @@ def build_NN(pos_td_dir, neg_td_dir, target_error):
     trainer = BackpropTrainer(net, ds)
 
     print "Training..."
-
-    epoch = 0
-    while True:
-        error = trainer.train()
-        epoch += 1
-        print "  epoch %d error: %f" % (epoch, error)
-
-        if error <= target_error:
-            print "Hit target error..."
-            break
+    print trainer.trainUntilConvergence()
 
     return net
 
