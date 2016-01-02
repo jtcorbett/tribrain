@@ -10,7 +10,7 @@ def triangle_area(p1, p2, p3):
     return np.cross(ab,ac)/2.0
 
 def draw_rand_triangle(path):
-    width = randint(0,5)
+    width = 1
     while True:
         p1 = (randint(0,64),randint(0,64))
         p2 = (randint(0,64),randint(0,64))
