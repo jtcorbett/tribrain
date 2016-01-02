@@ -41,14 +41,13 @@ def preprocess(raw_data):
     return feature_extraction(raw_data)
 
 def load_image(path):
-    image = Image.open(path).resize((64,64), PIL.Image.ANTIALIAS)
+    image = Image.open(path).resize((64,64), Image.ANTIALIAS)
     features = preprocess(np.array(image))
     return tuple([item for sublist in features for item in sublist])
 
 def load_dataset(dataset, data, positive):
     for sample_file in _files_from_path(data):
-        if not sample_file.startswith('.'): continue
-
+        if sample_file.startswith('.'): continue
         features = load_image(sample_file)
 
         if len(features) != IN_FEATURES:
@@ -81,7 +80,7 @@ def test_NN(net, path, positive):
     total = 0
 
     for sample_file in _files_from_path(path):
-        if not sample_file.startswith('.'): continue
+        if sample_file.startswith('.'): continue
 
         features = load_image(sample_file)
 
@@ -101,17 +100,19 @@ def test_NN(net, path, positive):
 
 def classify(net, path):
     for f in _files_from_path(path):
-        if not f.startswith('.'): continue
+        if f.startswith('.'): continue
 
         features = load_image(f)
         if len(features) != IN_FEATURES:
-            print "%s is of incorrect dimensions" % sample_file
+            print "%s is of incorrect dimensions" % f
             exit()
 
-        if net.activate(features) > 0:
-            print "classified %s as positive" % sample_file
+        score = net.activate(features)
+        print score
+        if score > 0:
+            print "classified %s as positive" % f
         else:
-            print "classified %s as negativem" % sample_file
+            print "classified %s as negative" % f
 
 
 def cross_validate(pos_dir, neg_dir, withhold=0.1, maxEpochs=None, hidden_layers=[100]):
@@ -131,7 +132,7 @@ def cross_validate(pos_dir, neg_dir, withhold=0.1, maxEpochs=None, hidden_layers
     neg_vd_files = neg_files[:int(len(neg_files)*withhold)]
     neg_td_files = neg_files[int(len(neg_files)*withhold):]
 
-    net = build_NN(pos_td_files, neg_td_files, maxEpochs)
+    net = build_NN(pos_td_files, neg_td_files, maxEpochs, hidden_layers)
 
     return (net, pos_vd_files, neg_vd_files)
 
@@ -140,9 +141,9 @@ def saveNetwork(net, filename):
     pickle.dump(net, fileObject)
     fileObject.close()
 
-def openNetwork(filename):
+def loadNetwork(filename):
     fileObject = open(filename, 'r')
-    net = picke.load(fileObject)
+    net = pickle.load(fileObject)
     fileObject.close()
     return net
 
