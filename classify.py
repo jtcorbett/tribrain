@@ -162,3 +162,13 @@ def openNetwork(filename):
     net = picke.load(fileObject)
     fileObject.close()
     return net
+
+def main():
+    net = build_NN("triangle", "circle", maxEpochs=30)
+    print "triangles"
+    test_NN(net, "triangle", True)
+    print "circle"
+    test_NN(net, "circle", False)
+
+if __name__ == "__main__":
+    main()
