@@ -3,6 +3,7 @@
 import os
 import numpy as np
 from PIL import Image
+import pickle
 
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
@@ -81,4 +82,16 @@ def test_NN(net, vd_dir, positive):
             print "classified %s incorrectly" % sample_file
 
     print "overall accuracy: %d/%d = %f" % (correct, total, float(correct)/float(total))
+
+
+def saveNetwork(net, filename):
+    fileObject = open(filename, 'w')
+    pickle.dump(net, fileObject)
+    fileObject.close()
+    
+def openNetwork(filename):
+    fileObject = open(filename, 'r')
+    net = picke.load(fileObject)
+    fileObject.close()
+    return net
 
