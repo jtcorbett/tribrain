@@ -6,7 +6,6 @@ import numpy as np
 from PIL import Image
 from random import shuffle
 
-
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
@@ -18,6 +17,16 @@ from skimage import data, color, exposure
 
 IN_FEATURES = 64*64
 np.set_printoptions(threshold='nan', linewidth='nan')
+
+def _files_from_path(path):
+    if isinstance(path, str):
+        (subdir, dirs, files) = os.walk(path).next()
+        files = map(lambda f: os.path.join(subdir, f), files)
+    elif isinstance(path, list):
+        files = path
+    else:
+        raise TypeError
+    return files
 
 def feature_extraction(raw_data):
     image = color.rgb2grey(raw_data)
@@ -37,21 +46,7 @@ def load_image(path):
     return tuple(preprocess([item for sublist in raw_features for item in sublist]))
 
 def load_dataset(dataset, data, positive):
-    if isinstance(data, str):
-        directory = True
-        (subdir, dirs, files) = os.walk(data).next()
-    elif isinstance(data, list):
-        directory = False
-        files = data
-    else:
-        raise TypeError
-
-    for f in files:
-        if directory:
-            sample_file = os.path.join(subdir, f)
-        else:
-            sample_file = f
-
+    for sample_file in _files_from_path(data):
         if not sample_file.endswith(".png"): continue
 
         features = load_image(sample_file)
@@ -82,24 +77,10 @@ def build_NN(pos_td_dir, neg_td_dir, maxEpochs=None, hidden_layers=[100]):
     return net
 
 def test_NN(net, path, positive):
-    if isinstance(path, str):
-        directory = True
-        (subdir, dirs, files) = os.walk(path).next()
-    elif isinstance(path, list):
-        directory = False
-        files = path
-    else:
-        raise TypeError
-
     correct = 0
     total = 0
 
-    for f in files:
-        if directory:
-            sample_file = os.path.join(subdir, f)
-        else:
-            sample_file = f
-
+    for sample_file in _files_from_path(path):
         if not sample_file.endswith(".png"): continue
 
         features = load_image(sample_file)
@@ -118,25 +99,16 @@ def test_NN(net, path, positive):
 
     print "overall accuracy: %d/%d = %f" % (correct, total, float(correct)/float(total))
 
+def classify(net, path):
+    for files in _files_from_path(path):
+        pass
+
 def cross_validate(pos_dir, neg_dir, withhold=0.1, maxEpochs=None, hidden_layers=[100]):
     if withhold < 0 or withhold > 1:
         raise ValueError
 
-    if isinstance(pos_dir, str):
-        (subdir, dirs, pos_files) = os.walk(pos_dir).next()
-        pos_files = map(lambda f: os.path.join(subdir, f), pos_files)
-    elif isinstance(pos_dir, list):
-        files = pos_dir
-    else:
-        raise TypeError
-
-    if isinstance(neg_dir, str):
-        (subdir, dirs, neg_files) = os.walk(neg_dir).next()
-        neg_files = map(lambda f: os.path.join(subdir, f), neg_files)
-    elif isinstance(neg_dir, list):
-        files = neg_dir
-    else:
-        raise TypeError
+    pos_files = _files_from_path(pos_dir)
+    neg_files = _files_from_path(neg_dir)
 
     print "Partitioning data..."
 
