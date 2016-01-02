@@ -50,7 +50,7 @@ def build_NN(pos_td_dir, neg_td_dir):
     trainer = BackpropTrainer(net, ds)
 
     print "Training..."
-    print trainer.trainUntilConvergence()
+    print trainer.trainUntilConvergence(verbose=True)
 
     return net
 
