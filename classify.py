@@ -13,7 +13,7 @@ np.set_printoptions(threshold='nan', linewidth='nan')
 
 # no preprocessing for now
 def preprocess(raw_data):
-    return raw_data
+    return map(lambda x: x[0], raw_data)
 
 def load_image(path):
     image = Image.open(path)
@@ -37,10 +37,10 @@ def load_dataset(dataset, path, positive):
 
     return dataset
 
-def build_NN(pos_td_dir, neg_td_dir):
+def build_NN(pos_td_dir, neg_td_dir, maxEpochs=None):
     # Hardcode NN features for now
     print "Creating Neural Net..."
-    net = buildNetwork(IN_FEATURES, 500, 300, 100, 1)
+    net = buildNetwork(IN_FEATURES, 100, 1)
     ds = SupervisedDataSet(IN_FEATURES, 1)
 
     print "Loading dataset..."
@@ -50,7 +50,7 @@ def build_NN(pos_td_dir, neg_td_dir):
     trainer = BackpropTrainer(net, ds)
 
     print "Training..."
-    print trainer.trainUntilConvergence(verbose=True)
+    trainer.trainUntilConvergence(maxEpochs=maxEpochs, verbose=True)
 
     return net
 
