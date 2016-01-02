@@ -1,9 +1,11 @@
 #!/usr/local/bin/python
 
 import os
+import pickle
 import numpy as np
 from PIL import Image
 from random import shuffle
+
 
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
@@ -149,3 +151,14 @@ def cross_validate(pos_dir, neg_dir, withhold=0.1, maxEpochs=None, hidden_layers
     net = build_NN(pos_td_files, neg_td_files, maxEpochs)
 
     return (net, pos_vd_files, neg_vd_files)
+
+def saveNetwork(net, filename):
+    fileObject = open(filename, 'w')
+    pickle.dump(net, fileObject)
+    fileObject.close()
+
+def openNetwork(filename):
+    fileObject = open(filename, 'r')
+    net = picke.load(fileObject)
+    fileObject.close()
+    return net
