@@ -92,7 +92,7 @@ def test_NN(net, vd_dir, positive):
     print "overall accuracy: %d/%d = %f" % (correct, total, float(correct)/float(total))
 
 def main():
-    net = build_NN("triangle","circle",.6)
+    net = build_NN("triangle","circle",.3)
     print "triangles"
     test_NN(net, "triangle", 1)
     print "circle"
